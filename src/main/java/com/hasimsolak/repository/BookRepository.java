@@ -1,21 +1,16 @@
 package com.hasimsolak.repository;
 
-import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+
 
 import com.hasimsolak.entity.Book;
 
 @Repository
-public class BookRepository {
+public interface BookRepository extends JpaRepository<Book , Long>{
 	
-	@Autowired
-	private List<Book> books;
-	
-	public List<Book> geBooks(){
-		
-		return books;
-	}
+
 
 }

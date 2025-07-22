@@ -11,13 +11,14 @@ import com.hasimsolak.entity.Book;
 import com.hasimsolak.service.BookService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/books")
 public class BookController {
 	
 	@Autowired
 	private BookService bookService;
 	
-	@GetMapping(path = "/books")
+	
+	@GetMapping
 	public List<Book> getBooks(){
 		
 		return bookService.getBooks();

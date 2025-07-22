@@ -10,15 +10,12 @@ import com.hasimsolak.repository.BookRepository;
 
 @Service
 public class BookService {
-	
-	@Autowired
-	private BookRepository bookRepository;
-	
-	public List<Book> getBooks(){
-		
-		return bookRepository.geBooks();
-		
-		
-	}
 
+	@Autowired
+    private BookRepository bookRepository;
+    
+
+    public List<Book> getBooks() {
+        return bookRepository.findAll();
+    }
 }
