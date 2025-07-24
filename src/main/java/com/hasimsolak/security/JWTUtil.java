@@ -2,15 +2,16 @@ package com.hasimsolak.security;
 
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.function.Function;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.hasimsolak.service.UserService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
@@ -48,6 +49,15 @@ public class JWTUtil {
 		return (username.equals(userDetails.getUsername()) && !exportToken(jwt , Claims::getExpiration).before(new Date()));
 	}
 
+	public String generateToken(UserDetails user) {
+		return Jwts.builder()
+				.setClaims(new HashMap<>())
+				.setSubject(user.getUsername())
+				.setIssuedAt(new Date(System.currentTimeMillis()))
+				.setExpiration(new Date(System.currentTimeMillis()+(1000*60*24)))
+				.signWith(getKey() , SignatureAlgorithm.HS256)
+				.compact();
+	}
 
 
 }

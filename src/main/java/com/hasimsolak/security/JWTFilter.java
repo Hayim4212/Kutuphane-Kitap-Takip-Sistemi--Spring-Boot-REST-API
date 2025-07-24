@@ -3,7 +3,6 @@ package com.hasimsolak.security;
 
 import java.io.IOException;
 
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +22,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
 	
 	private final JWTUtil jwtUtil;
+
 	private final UserDetailsService userDetailsService;
 	
 	public JWTFilter(JWTUtil jwtUtil, UserDetailsService userDetailsService) {
