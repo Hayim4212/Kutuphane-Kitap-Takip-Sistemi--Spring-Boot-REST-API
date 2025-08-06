@@ -40,6 +40,7 @@ public class JWTFilter extends OncePerRequestFilter {
 		if(header == null || !header.startsWith("Bearer ")) {
 			filterChain.doFilter(request, response);
 			return;
+			
 		};
 		
 		jwt = header.substring(7);

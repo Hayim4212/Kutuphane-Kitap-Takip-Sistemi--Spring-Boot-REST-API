@@ -24,10 +24,10 @@ public class UserService {
 	}
 	
 	
-	public User registerUser(String username, String password) {
+	public void registerUser(String username, String password) throws Exception {
 		
         if (userRepository.findByUsername(username).isPresent()) {
-            throw new RuntimeException("Bu kullanıcı adı zaten kullanılıyor.");
+            throw new Exception();
         }
         User newUser = new User();
         
@@ -35,7 +35,7 @@ public class UserService {
         
         newUser.setPassword(passwordEncoder.encode(password));
         
-        return userRepository.save(newUser);
+        userRepository.save(newUser);
         
 	}
 	

@@ -1,10 +1,14 @@
 package com.hasimsolak.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import com.hasimsolak.dto.BookDTO;
+import com.hasimsolak.dto.ErrorResponse;
 import com.hasimsolak.entity.Book;
 import com.hasimsolak.entity.User;
 import com.hasimsolak.service.BookService;
@@ -39,45 +44,57 @@ public class BookController {
 	
 
 	@GetMapping
-	public ResponseEntity<List<Book>> getBooks() {
-
-	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    
-	    String username = authentication.getName();  
+	public ResponseEntity<?> getBooks() {
+	    
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    
+        String username = authentication.getName();  
 	
         User currentUser = (User) userDetailsService.loadUserByUsername(username);
 
         List<Book> myBooks = bookService.getBooks(currentUser);
-        
+	        
         return ResponseEntity.ok(myBooks);
-        
+
 	}
 	
 	@PostMapping
-	public Book saveBook(@RequestBody BookDTO bookDTO) {
+	public ResponseEntity<?> saveBook(@RequestBody BookDTO bookDTO) {
 		
-	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	    
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    	    
 	    String username = authentication.getName();  
 	
         User currentUser = (User) userDetailsService.loadUserByUsername(username);
 		
+		bookService.saveBook(bookDTO.getName() , bookDTO.getAuthor() , currentUser);
 		
-		
-		return bookService.saveBook(bookDTO.getName() , bookDTO.getAuthor() , currentUser);
-		
+        Map<String, String> response = new HashMap<>();
+        
+        response.put("message", "Kayıt başarılı.");
+        
+        return ResponseEntity.ok(response); 
 	}
 	
 	@PutMapping(path = "/{bookId}")
-	public ResponseEntity<Optional<Book>> updateBook(@PathVariable Long bookId , @RequestBody BookDTO bookDTO){
-	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	    
+	public ResponseEntity<?> updateBook(@PathVariable Long bookId , @RequestBody BookDTO bookDTO){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        
 	    String username = authentication.getName();  
 	
         User currentUser = (User) userDetailsService.loadUserByUsername(username);
-        
 		
         Optional<Book> updatedBook = bookService.updateBook(bookId, currentUser, bookDTO);
+        
+        if (updatedBook.isEmpty()) {
+        	ErrorResponse errorResponse = new ErrorResponse(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Not Found",
+                    "Güncellenmek istenen kitap bulunamadı."
+                );
+        	
+        	return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
+		}
         
         return ResponseEntity.ok(updatedBook);
 		
@@ -85,7 +102,7 @@ public class BookController {
 	
 	
 	@DeleteMapping(path = "/{bookId}")
-	public boolean deleteBook(@PathVariable Long bookId)
+	public ResponseEntity<?> deleteBook(@PathVariable Long bookId)
 	{
 		
 	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -94,8 +111,24 @@ public class BookController {
 	
         User currentUser = (User) userDetailsService.loadUserByUsername(username);
         
-        return bookService.deleteBook(bookId, currentUser);
+        if (bookService.deleteBook(bookId, currentUser)) {
+            Map<String, String> response = new HashMap<>();
+            
+            response.put("message", "Kayıt başarı ile silinmiştir.");
+            
+            return ResponseEntity.ok(response); 
+		}
+        else {
+        	ErrorResponse errorResponse = new ErrorResponse(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Not Found",
+                    "Silinmek istenen kitap bulunamadı."
+                );
+        	
+        	return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
+		}
 		
+        
 	}
 
 }

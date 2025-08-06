@@ -24,7 +24,7 @@ public class BookService {
     }
     
     
-    public Book saveBook(String name , String author , User user) {
+    public void saveBook(String name , String author , User user) {
     	
     	Book newBook = new Book();
     	
@@ -34,7 +34,7 @@ public class BookService {
     	
     	newBook.setUser(user);
     	
-    	return bookRepository.save(newBook);
+    	bookRepository.save(newBook);
     	
     }
     
